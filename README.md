@@ -4,6 +4,8 @@ A chatbot service for small-business websites. An owner signs up, gives it the p
 
 "Tanya situs" is Indonesian for "ask the site".
 
+**Live:** https://tanya-situs.vercel.app
+
 ![The widget answering a question on a customer's page](docs/widget.png)
 
 ![The owner's dashboard: pages, install code, leads and unanswered questions](docs/dashboard.png)
@@ -156,7 +158,7 @@ There is no payment integration. An account is moved to Pro by hand with `npm ru
 
 ## Limitations
 
-- **Not deployed yet, and not measured yet.** It has been run locally against real pages and a real model, but there is no hosted demo and no evaluation set like the one in my PlacidWay chatbot. Answer quality on Indonesian small-business sites is untested.
+- **Not measured yet.** It runs against real pages and a real model, but there is no evaluation set like the one in my PlacidWay chatbot. Answer quality on Indonesian small-business sites is untested.
 - **No email verification and no password reset.** An owner who forgets their password needs it reset in the database. Both need an email provider.
 - **No payments.** See Plans.
 - **Pages that build their content with JavaScript cannot be read.** The page is fetched as served; no browser is run. Such a page is reported to the owner with that explanation.

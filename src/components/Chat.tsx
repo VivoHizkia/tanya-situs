@@ -31,6 +31,11 @@ export function Chat({ botId, name, welcome, strings }: Props) {
   const [leadFormFor, setLeadFormFor] = useState<number | null>(null);
   const [leadSent, setLeadSent] = useState(false);
 
+  // False until the page's script has loaded. Sending before that would be a plain form
+  // submission, which reloads the chat and loses the question.
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+
   const nextId = useRef(1);
   const bottomRef = useRef<HTMLDivElement>(null);
   // The text box is read when the form is sent instead of being tracked in state, so a
@@ -144,7 +149,7 @@ export function Chat({ botId, name, welcome, strings }: Props) {
           maxLength={MAX_QUESTION_CHARS}
           aria-label={strings.placeholder}
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading || !ready}>
           {strings.send}
         </button>
       </form>
