@@ -114,9 +114,34 @@ A free Gemini key is available at https://aistudio.google.com/apikey. No databas
 | `LLM_MODEL`          | no            | Default: `gemini-3.5-flash-lite`                                              |
 | `LLM_FALLBACK_MODEL` | no            | Second model on the same endpoint, used when the first stays busy             |
 | `DATABASE_URL`       | in production | Postgres connection string. The schema in `db/schema.sql` is applied on start |
+| `DATABASE_CA`        | no            | Root certificate of the database provider, to verify its identity             |
 | `APP_URL`            | no            | Public address of the app, used in the embed code shown to owners             |
 | `SIGNUPS_OPEN`       | no            | Set to `false` to stop new accounts                                           |
 | `CONTACT_URL`        | no            | Where the "Upgrade" and "Ask for Pro" links point. Read at build time         |
+
+## Deploying
+
+The app needs a Postgres database and a Node.js host. This is the setup it was written for:
+
+**Supabase (database).** Supabase serves every table in the `public` schema through its own REST API, which this app does not use. To keep the tables out of it, they live in a separate schema that the API roles cannot reach, owned by a role that can do nothing else:
+
+```sql
+CREATE SCHEMA tanya;
+CREATE ROLE tanya_app LOGIN PASSWORD 'a-long-random-password';
+GRANT USAGE, CREATE ON SCHEMA tanya TO tanya_app;
+ALTER ROLE tanya_app SET search_path = tanya;
+REVOKE ALL ON SCHEMA tanya FROM PUBLIC;
+```
+
+`DATABASE_URL` then points at the connection pooler in transaction mode, which is what a serverless host should use:
+
+```
+postgresql://tanya_app.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres?sslmode=no-verify
+```
+
+`sslmode=no-verify` encrypts the connection without checking the server's certificate, because Supabase signs it with its own root certificate. To have it checked, download that certificate from the project's database settings, put it in `DATABASE_CA`, and remove `sslmode` from the URL.
+
+**Vercel (hosting).** Import the repository, add `LLM_API_KEY` and `DATABASE_URL`, deploy. The tables are created on the first request.
 
 ## Plans
 

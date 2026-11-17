@@ -14,7 +14,12 @@ const schemaSql = () => readFileSync(path.join(process.cwd(), "db", "schema.sql"
 async function connectPostgres(url: string): Promise<Db> {
   const { Pool } = await import("pg");
   // Serverless instances each hold their own pool, so keep it small.
-  const pool = new Pool({ connectionString: url, max: 3 });
+  // DATABASE_CA holds the provider's root certificate in PEM form, with a literal backslash-n
+  // where the file has line breaks. With it the server's identity is verified; leave "sslmode"
+  // out of DATABASE_URL in that case, because options in the connection string take precedence
+  // over the ones given here.
+  const ca = process.env.DATABASE_CA?.replaceAll("\\n", "\n");
+  const pool = new Pool({ connectionString: url, max: 3, ...(ca ? { ssl: { ca } } : {}) });
   await pool.query(schemaSql());
   return {
     async query<Row>(sql: string, params: unknown[] = []) {
