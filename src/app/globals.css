@@ -697,7 +697,8 @@ input[type="checkbox"] {
 }
 
 .contact-link {
-  display: inline-block;
+  display: block;
+  width: fit-content;
   margin-top: 8px;
   font-weight: 600;
 }
