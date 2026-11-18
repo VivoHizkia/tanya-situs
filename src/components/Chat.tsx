@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { ChatStrings } from "@/lib/strings";
+import { LinkedText } from "./LinkedText";
 import type { ChatResponse, ChatTurn } from "@/lib/types";
 
 type Message = {
@@ -117,7 +118,11 @@ export function Chat({ botId, name, welcome, strings }: Props) {
         {messages.map((message) => (
           <div key={message.id} className={`msg msg--${message.role}`}>
             <div className="bubble">
-              {message.content}
+              {message.role === "assistant" ? (
+                <LinkedText text={message.content} />
+              ) : (
+                message.content
+              )}
               <Extras response={message.response} strings={strings} />
             </div>
             {leadFormFor === message.id && !leadSent && (

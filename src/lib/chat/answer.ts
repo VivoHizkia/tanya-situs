@@ -8,7 +8,7 @@ import {
   type Chunk,
   type SourceRef,
 } from "@/lib/types";
-import { checkPrices } from "./guardrails";
+import { checkPhones, checkPrices } from "./guardrails";
 import { answerPrompt, formatContext, formatHistory, plannerPrompt } from "./prompts";
 
 const MAX_HISTORY_TURNS = 6;
@@ -188,6 +188,9 @@ export async function answerQuestion(
 
   const prices = checkPrices(draft.answer, passages, citedIds);
   if (!prices.ok) return reject(`unsupported price ${prices.unsupported.join(", ")}`);
+
+  const phones = checkPhones(draft.answer, passages);
+  if (!phones.ok) return reject(`unsupported phone number ${phones.unsupported.join(", ")}`);
   for (const id of prices.extraSourceIds) citedIds.add(id);
 
   if (!draft.answer) return reject("empty answer");

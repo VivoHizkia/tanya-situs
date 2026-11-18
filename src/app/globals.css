@@ -672,6 +672,12 @@ input[type="checkbox"] {
   color: var(--brand-ink);
 }
 
+.msg--assistant .bubble a {
+  color: var(--brand);
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+
 .bubble--typing {
   color: var(--muted);
 }

@@ -67,3 +67,29 @@ export function checkPrices(answer: string, retrieved: Chunk[], citedIds: Set<st
   if (unsupported.length > 0) return { ok: false, unsupported };
   return { ok: true, extraSourceIds: [...extraSourceIds] };
 }
+
+// Indonesian mobile numbers as people write them: 0813 1783 862, +62 813-1783-862, 6281317838 62.
+const PHONE = /(?<![\d+])(?:\+?62|0)\s?8\d{1,3}(?:[\s.-]?\d{2,4}){2,3}(?!\d)/g;
+
+// "0813 1783 862" and "+62 813-1783-862" both become "628131783862".
+export function normalizePhone(text: string): string {
+  const digits = text.replace(/\D/g, "");
+  return digits.startsWith("0") ? `62${digits.slice(1)}` : digits;
+}
+
+export function phoneNumbers(text: string): string[] {
+  return [...new Set((text.match(PHONE) ?? []).map(normalizePhone))];
+}
+
+// Every phone number in the answer has to appear in one of the retrieved passages. A wrong
+// number sends a customer to a stranger, so an answer with one is rejected outright.
+export function checkPhones(
+  answer: string,
+  retrieved: Chunk[],
+): { ok: boolean; unsupported: string[] } {
+  const known = new Set(
+    retrieved.flatMap((chunk) => phoneNumbers(`${chunk.section}\n${chunk.text}`)),
+  );
+  const unsupported = phoneNumbers(answer).filter((phone) => !known.has(phone));
+  return { ok: unsupported.length === 0, unsupported };
+}
