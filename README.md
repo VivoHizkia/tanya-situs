@@ -71,7 +71,7 @@ Each reply has one of five statuses:
 | **Gemini `gemini-3.5-flash-lite`**                    | Cheap and fast enough for two calls per message. The client (`src/lib/llm.ts`) speaks the OpenAI-compatible API, so another provider is two environment variables away.                                |
 | **Own login, standard library only**                  | scrypt password hashes and random session tokens stored as SHA-256 hashes. Small enough to read in one sitting (`src/lib/auth/`).                                                                      |
 | **Widget in an iframe** (`public/widget.js`)          | The host page's CSS cannot break the chat, and the chat cannot read the host page.                                                                                                                     |
-| **Vitest**                                            | 115 tests. The LLM and the network are replaced by fakes; the database is real.                                                                                                                        |
+| **Vitest**                                            | 129 tests. The LLM and the network are replaced by fakes; the database is real.                                                                                                                        |
 
 ## Security
 
